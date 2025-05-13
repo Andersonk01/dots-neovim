@@ -1,0 +1,65 @@
+return {
+  "folke/trouble.nvim",
+  dependencies = { "nvim-tree/nvim-web-devicons" },
+  cmd = { "TroubleToggle", "Trouble" },
+  keys = {
+    { "<leader>xx", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics" },
+    { "<leader>xX", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics" },
+    { "<leader>xL", "<cmd>TroubleToggle loclist<cr>", desc = "Location List" },
+    { "<leader>xQ", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List" },
+    { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" },
+  },
+  opts = {
+    position = "bottom",
+    height = 10,
+    width = 50,
+    icons = {
+      error = "",
+      warning = "",
+      hint = "",
+      information = "",
+      other = "",
+      indent = {
+        ws = " ", -- Espaço para indentação
+      },
+    },
+    use_icons = true,
+    mode = "workspace_diagnostics",
+    fold_open = "",
+    fold_closed = "",
+    group = true,
+    padding = true,
+    action_keys = {
+      close = "q",
+      cancel = "<esc>",
+      refresh = "r",
+      jump = {"<cr>", "<tab>"},
+      open_split = {"<c-x>"},
+      open_vsplit = {"<c-v>"},
+      open_tab = {"<c-t>"},
+      jump_close = {"o"},
+      toggle_mode = "m",
+      toggle_preview = "P",
+      hover = "K",
+      preview = "p",
+      close_folds = {"zM", "zm"},
+      open_folds = {"zR", "zr"},
+      toggle_fold = {"zA", "za"},
+      previous = "k",
+      next = "j"
+    },
+    indent_lines = true,
+    auto_open = false,
+    auto_close = false,
+    auto_preview = true,
+    auto_fold = false,
+    signs = {
+      error = "",
+      warning = "",
+      hint = "",
+      information = "",
+      other = "﫠"
+    },
+    use_diagnostic_signs = false
+  },
+} 
