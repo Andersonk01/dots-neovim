@@ -6,6 +6,7 @@
 |--------------|--------------------------------|
 | `<leader>ue` | Alternar visibilidade sidebars |
 | `<leader>uE` | Selecionar janela do sidebar   |
+| `<leader>o`  | Alternar Outline               |
 
 ## Navegação nas Sidebars
 
@@ -46,12 +47,28 @@
 | `<leader>xQ`  | Lista de quickfix             |
 | `gR`          | Referências LSP               |
 
-## Explorador de Arquivos (Neo-tree)
+## Explorador de Arquivos & Outline
 
-Acesse através da sidebar ou:
-- Utilize `<leader>ue` para mostrar/esconder o Neo-tree
-- Selecione a janela com `<leader>uE`
+A sidebar esquerda contém uma visão integrada:
+- **Explorer**: Navegação de arquivos do projeto
+- **Outline**: Estrutura do código do arquivo atual
 
-## Outline/Estrutura do Código (Aerial)
+### Atalhos do Explorer (Neo-tree)
 
-Disponível nas sidebars esquerda e direita para navegação rápida no código. 
+| Atalho       | Ação                           |
+|--------------|--------------------------------|
+| `<leader>ue` | Mostrar/esconder o Explorer    |
+| `<leader>uE` | Selecionar a janela do sidebar |
+| `o`          | Alternar visualização do Outline |
+
+### Atalhos do Outline (Aerial)
+
+| Atalho       | Ação                           |
+|--------------|--------------------------------|
+| `<leader>o`  | Alternar Outline               |
+| `[y`         | Item anterior                  |
+| `]y`         | Próximo item                   |
+| `[Y`         | Item pai anterior              |
+| `]Y`         | Próximo item pai               |
+
+O Outline é aberto automaticamente quando o Explorer é aberto e exibe a estrutura do código do arquivo atual, facilitando a navegação por funções, classes, métodos e outras estruturas importantes. 
