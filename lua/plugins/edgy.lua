@@ -1,124 +1,208 @@
 return {
-  "folke/edgy.nvim",
-  event = "VeryLazy",
-  keys = {
-    { "<leader>ue", function() require("edgy").toggle() end, desc = "Toggle Edgy Sidebars" },
-    { "<leader>uE", function() require("edgy").select() end, desc = "Select Edgy Window" },
+  {
+    "folke/edgy.nvim",
+    event = "VeryLazy",
+    opts = {
+      bottom = {
+        -- toggleterm holds the terminal
+        {
+          ft = "toggleterm",
+          size = { height = 0.4 },
+        },
+        {
+          ft = "qf",
+          title = "QuickFix",
+        },
+        {
+          ft = "help",
+          size = { height = 0.5 },
+        },
+      },
+      left = {
+        -- Combined view with both Explorer and Outline
+        {
+          title = "Explorer & Outline",
+          ft = "neo-tree",
+          filter = function(buf)
+            return vim.b[buf].neo_tree_source == "filesystem"
+          end,
+          size = { width = 30 },
+        },
+      },
+      right = {
+        -- Neo-tree Git panel
+        {
+          title = "Git",
+          ft = "neo-tree",
+          filter = function(buf)
+            return vim.b[buf].neo_tree_source == "git_status"
+          end,
+          pinned = true,
+          open = "Neotree focus position=right source=git_status",
+        },
+        -- Neo-tree Buffers panel
+        {
+          title = "Buffers",
+          ft = "neo-tree",
+          filter = function(buf)
+            return vim.b[buf].neo_tree_source == "buffers"
+          end,
+          pinned = true,
+          open = "Neotree focus position=right source=buffers",
+        },
+      },
+      -- configuration options
+      animate = {
+        enabled = true,
+        fps = 100,
+        on_begin = function()
+          vim.g.minianimate_disable = true
+        end,
+        on_end = function()
+          vim.g.minianimate_disable = false
+        end,
+      },
+      keys = {
+        -- increase width
+        ["<c-w>>"] = function(win)
+          win:resize("width", 2)
+        end,
+        -- decrease width
+        ["<c-w><lt>"] = function(win)
+          win:resize("width", -2)
+        end,
+        -- increase height
+        ["<c-w>+"] = function(win)
+          win:resize("height", 2)
+        end,
+        -- decrease height
+        ["<c-w>-"] = function(win)
+          win:resize("height", -2)
+        end,
+      },
+    },
+    init = function()
+      -- Configuração para adicionar o Aerial no Neo-tree
+      vim.api.nvim_create_autocmd("BufWinEnter", {
+        pattern = "*",
+        callback = function()
+          -- Se o buffer atual é o Neo-Tree
+          if vim.bo.filetype == "neo-tree" then
+            -- Verificar se o Neo-Tree está no painel esquerdo
+            local win = vim.api.nvim_get_current_win()
+            local buf = vim.api.nvim_get_current_buf()
+            local is_filesystem = vim.b[buf].neo_tree_source == "filesystem"
+            
+            if is_filesystem then
+              -- Esperar um pouco para garantir que Neo-tree está completamente carregado
+              vim.defer_fn(function()
+                -- Abrir o Aerial apenas se ainda não estiver aberto
+                if vim.fn.bufwinid("aerial") == -1 then
+                  vim.cmd("AerialToggle!")
+                end
+              end, 100)
+            end
+          end
+        end
+      })
+    end
   },
-  init = function()
-    vim.opt.laststatus = 3
-    vim.opt.splitkeep = "screen"
-  end,
-  opts = {
-    -- Configuração das barras laterais
-    left = {
-      -- Neo-tree como explorador de arquivos
-      {
-        title = "Neo-Tree Explorer",
-        ft = "neo-tree",
-        filter = function(buf)
-          return vim.b[buf].neo_tree_source == "filesystem"
-        end,
-        size = { height = 0.5, width = 30 },
-      },
-      -- Explorador Git
-      {
-        title = "Git Status",
-        ft = "neo-tree",
-        filter = function(buf)
-          return vim.b[buf].neo_tree_source == "git_status"
-        end,
-        pinned = true,
-        open = "Neotree position=left git_status",
-      },
-      -- Gerenciador de buffers
-    --   {
-    --     title = "Buffers",
-    --     ft = "neo-tree",
-    --     filter = function(buf)
-    --       return vim.b[buf].neo_tree_source == "buffers"
-    --     end,
-    --     pinned = true,
-    --     open = "Neotree position=left buffers",
-    --   },
-      -- Aerial para navegação de código
-      {
-        title = "Outline",
-        ft = "aerial",
-        pinned = true,
-        open = "AerialOpen",
-      },
-      -- Outros possíveis plugins para sidebar
-      "neotest",     -- Para testes
-      "trouble",     -- Para erros e warnings
+  -- Make sure aerial is installed
+  {
+    "stevearc/aerial.nvim",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "neovim/nvim-lspconfig",
     },
-    
-    -- Painel inferior
-    bottom = {
-      -- Terminal integrado
-      {
-        ft = "toggleterm",
-        size = { height = 0.4 },
-        filter = function(buf, win)
-          return vim.api.nvim_win_get_config(win).relative == ""
-        end,
-      },
-      {
-        ft = "lazyterm",
-        title = "LazyTerm",
-        size = { height = 0.4 },
-      },
-      -- Quickfix e location list
-      { ft = "qf", title = "QuickFix" },
-      { ft = "help", size = { height = 20 } },
-      "Trouble",
-      "spectre_panel",
-    },
-    
-    -- Painel direito
-    right = {
-      -- Você pode adicionar outros plugins aqui
-      {
-        title = "Aerial",
-        ft = "aerial",
-        open = "AerialOpen right",
-      },
-    },
-    
-    -- Opções globais
-    wo = {
-      winbar = true,
-      winfixwidth = true,
-      signcolumn = "no",
-      foldcolumn = "0",
-      number = false,
-      relativenumber = false,
-      cursorline = true,
-    },
-    
-    -- Atalhos de teclado personalizados para as janelas do Edgy
+    event = "VeryLazy",
+    cmd = { "AerialToggle", "AerialOpen", "AerialInfo" },
     keys = {
-      -- Abrir/fechar
-      ["q"] = function(win) win:close() end,
-      ["<c-q>"] = function(win) win:hide() end,
-      ["Q"] = function(win) win.view.edgebar:close() end,
-      
-      -- Navegação
-      ["]w"] = function(win) win:next({ visible = true, focus = true }) end,
-      ["[w"] = function(win) win:prev({ visible = true, focus = true }) end,
-      
-      -- Redimensionamento
-      ["<c-w>>"] = function(win) win:resize("width", 2) end,
-      ["<c-w><"] = function(win) win:resize("width", -2) end,
-      ["<c-w>+"] = function(win) win:resize("height", 2) end,
-      ["<c-w>-"] = function(win) win:resize("height", -2) end,
-      ["<c-w>="] = function(win) win.view.edgebar:equalize() end,
+      { "<leader>o", "<cmd>AerialToggle!<cr>", desc = "Toggle Outline" },
     },
-    
-    -- Ícones
-    icons = {
-      closed = " ",
-      open = " ",
+    opts = {
+      -- This is critical to make it work with Neo-tree
+      manage_folds = false,
+      layout = {
+        -- Outline visível ao lado do Explorer
+        default_direction = "right", -- Exibe no lado direito do Neo-tree
+        placement = "window", -- Coloca em uma janela separada
+        width = 25, -- Largura fixa
+      },
+      -- Attach to all buffers
+      attach_mode = "global",
+      backends = { "lsp", "treesitter", "markdown", "man" },
+      show_guides = true,
+      filter_kind = false,
+      guides = {
+        mid_item = "├ ",
+        last_item = "└ ",
+        nested_top = "│ ",
+        whitespace = "  ",
+      },
+      keymaps = {
+        ["[y"] = "actions.prev",
+        ["]y"] = "actions.next",
+        ["[Y"] = "actions.prev_up",
+        ["]Y"] = "actions.next_up",
+        ["{"] = false,
+        ["}"] = false,
+        ["[["] = false,
+        ["]]"] = false,
+      },
+      close_on_select = false,
+      highlight_on_hover = true,
+      open_automatic = true,
+      ignore = {
+        filetypes = {},
+        buftypes = {},
+        wintypes = {},
+      },
+      icons = {
+        Array = "󰅪 ",
+        Boolean = " ",
+        Class = "󰠱 ",
+        Constant = "󰏿 ",
+        Constructor = " ",
+        Enum = " ",
+        EnumMember = " ",
+        Event = " ",
+        Field = " ",
+        File = "󰈙 ",
+        Function = "󰊕 ",
+        Interface = " ",
+        Key = "󰌋 ",
+        Method = "󰆧 ",
+        Module = " ",
+        Namespace = "󰌗 ",
+        Null = "󰟢 ",
+        Number = "󰎠 ",
+        Object = "󰅩 ",
+        Operator = "󰆕 ",
+        Package = " ",
+        Property = " ",
+        String = " ",
+        Struct = "󰙅 ",
+        TypeParameter = "󰊄 ",
+        Variable = "󰆧 ",
+      },
+      nerd_font = "auto",
+    },
+  },
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    optional = true,
+    opts = {
+      window = {
+        width = 30,
+        mappings = {
+          ["o"] = "toggle_outline",
+        },
+      },
+      commands = {
+        toggle_outline = function()
+          vim.cmd("AerialToggle!")
+        end,
+      },
     },
   },
 } 
