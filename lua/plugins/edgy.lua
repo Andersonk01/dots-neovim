@@ -4,11 +4,7 @@ return {
     event = "VeryLazy",
     opts = {
       bottom = {
-        -- toggleterm holds the terminal
-        {
-          ft = "toggleterm",
-          size = { height = 0.4 },
-        },
+        -- Removendo a entrada do toggleterm para evitar que capture terminais
         {
           ft = "qf",
           title = "QuickFix",
@@ -86,6 +82,28 @@ return {
       },
     },
     init = function()
+      -- Adicionar uma exclusão explícita para janelas de terminal flutuante
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "toggleterm",
+        callback = function()
+          -- Marcar explicitamente para não ser gerenciado pelo edgy
+          local buf = vim.api.nvim_get_current_buf()
+          local win = vim.api.nvim_get_current_win()
+          
+          -- Verificar se é um terminal flutuante
+          local is_float = false
+          local ok, config = pcall(vim.api.nvim_win_get_config, win)
+          if ok and config.relative ~= "" then
+            is_float = true
+          end
+          
+          if is_float then
+            -- Marcar explicitamente este buffer para não ser capturado
+            vim.b[buf].edgy_exclude = true
+          end
+        end
+      })
+      
       -- Configuração para adicionar o Aerial no Neo-tree
       vim.api.nvim_create_autocmd("BufWinEnter", {
         pattern = "*",
