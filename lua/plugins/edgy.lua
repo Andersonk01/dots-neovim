@@ -38,7 +38,9 @@ return {
             return vim.b[buf].neo_tree_source == "git_status"
           end,
           pinned = true,
-          open = "Neotree focus position=right source=git_status",
+          open = function()
+            vim.cmd("Neotree show right git_status")
+          end,
         },
         -- Neo-tree Buffers panel
         {
@@ -48,7 +50,9 @@ return {
             return vim.b[buf].neo_tree_source == "buffers"
           end,
           pinned = true,
-          open = "Neotree focus position=right source=buffers",
+          open = function()
+            vim.cmd("Neotree show right buffers")
+          end,
         },
       },
       -- configuration options
